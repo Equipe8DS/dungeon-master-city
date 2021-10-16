@@ -1,12 +1,9 @@
 import json
-
-from botController import BotController
-from botController import BotController
+from bot_utils import BotUtils
 
 
 class ItemController:
-    __bot_controller__ = BotController()
-    __bot_util__ = BotController()
+    __bot_util__ = BotUtils()
 
     QUALIDADE = {
         'ruim': 'Ruim',

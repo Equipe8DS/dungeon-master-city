@@ -1,14 +1,10 @@
 import json
 
-from dotenv import load_dotenv
-
-from botController import BotController
-from botController import BotController
+from bot_utils import BotUtils
 
 
 class CidadeController:
-    __bot_controller__ = BotController()
-    __bot_util__ = BotController()
+    __bot_util__ = BotUtils()
 
     def buscar_cidade(self):
         request = self.__bot_util__.send_get(path='/cidade/')

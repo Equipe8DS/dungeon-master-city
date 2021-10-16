@@ -1,12 +1,12 @@
 import json
 
-from botController import BotController
+from bot_utils import BotUtils
 from item.item_controller import ItemController
 from personagem.personagem_controller import PersonagemController
 
 
 class LojaController:
-    __bot_util__ = BotController()
+    __bot_util__ = BotUtils()
     personagem_controller = PersonagemController()
     item_controller = ItemController()
 

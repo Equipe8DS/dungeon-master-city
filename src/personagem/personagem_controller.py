@@ -1,10 +1,10 @@
 import json
 
-from botController import BotController
+from bot_utils import BotUtils
 
 
 class PersonagemController:
-    __bot_util__ = BotController()
+    __bot_util__ = BotUtils()
 
     def buscar_personagens(self):
         request = self.__bot_util__.send_get('/personagem/')
