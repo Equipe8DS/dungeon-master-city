@@ -1,3 +1,4 @@
+import json
 import os
 
 import telebot
@@ -16,35 +17,46 @@ bot_token = os.getenv('BOT_TOKEN')
 
 bot = telebot.TeleBot(token=bot_token)
 
+bot_controller = BotController()
 cidade_controller = CidadeController()
 item_controller = ItemController()
 jogador_controller = JogadorController()
 loja_controller = LojaController()
 personagem_controller = PersonagemController()
-bot_controller = BotController()
 
+
+# @bot.message_handler(commands=['comprar'])
+# def comprar_item(message):
+#     cid = message.chat.id
+#     nome_personagem, nome_loja, nome_item, quantidade = message.text.split(' ')[1:]
+#     bot.send_chat_action(cid, 'typing')
+#
+#     if not nome_loja or not nome_personagem or not nome_item or not quantidade:
+#         bot.send_message(cid, "Campos faltantes.")
+#     else:
+#         mensagem_processamento = bot.send_message(cid, text='Processando a compra, por favor aguarde...',
+#                                                   parse_mode="Markdown")
+#         try:
+#             bot.send_chat_action(cid, 'typing')
+#
+#             info = loja_controller.comprar_item(nome_loja, nome_personagem, nome_item, quantidade)
+#             bot.delete_message(message_id=mensagem_processamento.message_id, chat_id=cid)
+#             bot.send_message(chat_id=cid, text=info)
+#         except Exception as e:
+#             print(e)
+#             bot.delete_message(message_id=mensagem_processamento.message_id, chat_id=mensagem_processamento.chat.id)
+#             bot.send_message(chat_id=cid, text='Houve um erro ao comprar o item.')
 
 @bot.message_handler(commands=['comprar'])
 def comprar_item(message):
     cid = message.chat.id
-    nome_personagem, nome_loja, nome_item, quantidade = message.text.split(' ')[1:]
     bot.send_chat_action(cid, 'typing')
+    bot_controller.selecionar_personagem(chat_id=cid)
 
-    if not nome_loja or not nome_personagem or not nome_item or not quantidade:
-        bot.send_message(cid, "Campos faltantes.")
-    else:
-        mensagem_processamento = bot.send_message(cid, text='Processando a compra, por favor aguarde...',
-                                                  parse_mode="Markdown")
-        try:
-            bot.send_chat_action(cid, 'typing')
 
-            info = loja_controller.comprar_item(nome_loja, nome_personagem, nome_item, quantidade)
-            bot.delete_message(message_id=mensagem_processamento.message_id, chat_id=cid)
-            bot.send_message(chat_id=cid, text=info)
-        except Exception as e:
-            print(e)
-            bot.delete_message(message_id=mensagem_processamento.message_id, chat_id=mensagem_processamento.chat.id)
-            bot.send_message(chat_id=cid, text='Houve um erro ao comprar o item.')
+@bot.callback_query_handler(func=lambda call: True)
+def callback_query(call):
+    bot_controller.processa_compra(dados=call)
 
 
 @bot.message_handler(commands=['cidades'])
@@ -222,6 +234,7 @@ def send_welcome(message):
     bot.reply_to(message, "Seja bem-vindo ! A grande Redzay te espera.")
 
 
+bot_controller.bot = bot
 bot.polling(non_stop=True)
 # while True:
 #    try:

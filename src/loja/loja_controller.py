@@ -28,11 +28,7 @@ class LojaController:
         loja = content["results"][0]
         return loja
 
-    def comprar_item(self, nome_loja, nome_personagem, nome_item, quantidade):
-        id_loja = self.buscar_loja_nome(nome_loja)['pk']
-        id_personagem = self.personagem_controller.buscar_personagem_nome(personagem_nome=nome_personagem)['pk']
-        id_item = self.item_controller.buscar_item_nome(item_nome=nome_item)['pk']
-
+    def comprar_item(self, id_loja, id_personagem, id_item, quantidade):
         request = self.__bot_util__.send_post(path='/loja/comprar-item/',
                                               data={'idLoja': id_loja, 'idPersonagem': id_personagem, 'idItem': id_item,
                                                     'quantidade': quantidade})
