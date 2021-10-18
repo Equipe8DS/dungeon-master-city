@@ -196,6 +196,23 @@ def send_info_personagem(message):
         print(e)
         bot.send_message(cid, "Houve um erro ao consultar o personagem.", parse_mode="Markdown")
 
+@bot.message_handler(commands=['inventario-personagem'])
+def send_inventario_personagem(message):
+    cid = message.chat.id
+    bot.send_chat_action(cid, 'typing')
+    try:
+        personagem_id = ' '.join(message.text.split(' ')[1:])
+        
+        if not personagem_id:
+            bot.send_message(cid, "Insira a id do personagem que deseja visualizar o inventário.")
+        else:
+            info = personagem_controller.inventario_personagem(personagem_id=personagem_id)
+            print(info)
+            bot.send_message(cid, info, parse_mode="Markdown")
+    except Exception as e:
+        print(e)
+        bot.send_message(cid, "Houve um erro ao consultar o personagem.", parse_mode="Markdown")    
+
 
 @bot.message_handler(commands=['itens'])
 def send_itens_lista(message):

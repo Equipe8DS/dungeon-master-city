@@ -25,3 +25,16 @@ class PersonagemController:
                f'Tipo: {personagem["tipo"]} \n'
 
         return info
+
+    def inventario_personagem(self, personagem_id):
+        request = self.__bot_util__.send_get(f'/inventario/?personagem_id={personagem_id}')
+        content = json.loads(request.content)
+        inventario = content["results"]
+        i = 1
+        response = ""
+        for object in inventario:
+            desc = "\n     Descrição: " + object["item"]["descricao"]
+            cat = "\n     Categoria: " + object["item"]["categoria"]
+            response = response + str(i) + " - " +  "Nome: " + object["item"]["nome"] + cat +  desc  + "\n" 
+            i = i + 1
+        return "Inventario de personagem " + personagem_id + ': \n' + response   
