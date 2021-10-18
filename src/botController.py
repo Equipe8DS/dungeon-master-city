@@ -5,12 +5,14 @@ from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, ForceReply
 
 from loja.loja_controller import LojaController
 from personagem.personagem_controller import PersonagemController
+from item.item_controller import ItemController
 
 
 class BotController:
     bot = telebot.TeleBot(token='')
     loja_controller = LojaController()
     personagem_controller = PersonagemController()
+    item_controller = ItemController()
 
     loja_selecionada = {}
     item_selecionado = {}
@@ -35,7 +37,7 @@ class BotController:
         markup.row_width = 2
 
         for estoque in estoques_loja:
-            item_json = {'qtd': estoque['quantidade_item'], 'id': estoque['item_id'], 'nome': estoque['item']['nome']}
+            item_json = {'id': estoque['item_id']}
 
             data = json.dumps({'next': 'qtd', 'item': item_json})
 
@@ -67,18 +69,8 @@ class BotController:
         self.bot.send_message(chat_id=chat_id, text='Para qual personagem deseja comprar?', reply_markup=markup)
 
     def selecionar_quantidade(self, chat_id):
-        quantidade = int(self.item_selecionado['quantidade'])
-        markup = InlineKeyboardMarkup()
-
-        for i in range(1, quantidade + 1):
-            data = {'qtd': i, 'next': 'comprar'}
-            label = f'{i}'
-            markup.add(InlineKeyboardButton(text=label, callback_data=json.dumps(data)))
-
         reply = self.bot.send_message(chat_id=chat_id, text='Quantos itens?', reply_markup=ForceReply())
-
         callback = lambda message: self.confirmar_compra(quantidade=message.text, chat_id=chat_id)
-
         self.bot.register_for_reply_by_message_id(message_id=reply.message_id, callback=callback)
 
     def confirmar_compra(self, quantidade, chat_id):
@@ -122,8 +114,7 @@ class BotController:
             self.selecionar_item_loja(loja_id=data['id'], chat_id=chat_id)
         elif next == 'qtd':
             self.item_selecionado['id'] = data['item']['id']
-            self.item_selecionado['nome'] = data['item']['nome']
-            self.item_selecionado['quantidade'] = data['item']['qtd']
+            self.item_selecionado['nome'] = self.item_controller.buscar_item_id(data['item']['id'])['nome']
             self.selecionar_quantidade(chat_id=chat_id)
         elif next == 'efetuar_compra':
             self.efetuar_compra(opcao=data['opcao'], chat_id=chat_id)

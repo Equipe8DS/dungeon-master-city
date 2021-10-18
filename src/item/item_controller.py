@@ -29,6 +29,12 @@ class ItemController:
         item = content["results"][0]
         return item
 
+    def buscar_item_id(self, item_id):
+        request = self.__bot_util__.send_get(path=f'/item/{item_id}')
+
+        content = json.loads(request.content)
+        return content
+
     def buscar_itens(self):
         request = self.__bot_util__.send_get(path='/item/')
 

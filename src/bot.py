@@ -25,28 +25,6 @@ loja_controller = LojaController()
 personagem_controller = PersonagemController()
 
 
-# @bot.message_handler(commands=['comprar'])
-# def comprar_item(message):
-#     cid = message.chat.id
-#     nome_personagem, nome_loja, nome_item, quantidade = message.text.split(' ')[1:]
-#     bot.send_chat_action(cid, 'typing')
-#
-#     if not nome_loja or not nome_personagem or not nome_item or not quantidade:
-#         bot.send_message(cid, "Campos faltantes.")
-#     else:
-#         mensagem_processamento = bot.send_message(cid, text='Processando a compra, por favor aguarde...',
-#                                                   parse_mode="Markdown")
-#         try:
-#             bot.send_chat_action(cid, 'typing')
-#
-#             info = loja_controller.comprar_item(nome_loja, nome_personagem, nome_item, quantidade)
-#             bot.delete_message(message_id=mensagem_processamento.message_id, chat_id=cid)
-#             bot.send_message(chat_id=cid, text=info)
-#         except Exception as e:
-#             print(e)
-#             bot.delete_message(message_id=mensagem_processamento.message_id, chat_id=mensagem_processamento.chat.id)
-#             bot.send_message(chat_id=cid, text='Houve um erro ao comprar o item.')
-
 @bot.message_handler(commands=['comprar'])
 def comprar_item(message):
     cid = message.chat.id
