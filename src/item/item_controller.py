@@ -3,7 +3,7 @@ from bot_utils import BotUtils
 
 
 class ItemController:
-    __bot_util__ = BotUtils()
+    __bot_util__ = BotUtils.get_instance()
 
     QUALIDADE = {
         'ruim': 'Ruim',

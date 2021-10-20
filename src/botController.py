@@ -6,6 +6,7 @@ from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, ForceReply
 from loja.loja_controller import LojaController
 from personagem.personagem_controller import PersonagemController
 from item.item_controller import ItemController
+from jogador.jogador_controller import JogadorController
 
 
 class BotController:
@@ -13,6 +14,7 @@ class BotController:
     loja_controller = LojaController()
     personagem_controller = PersonagemController()
     item_controller = ItemController()
+    jogador_controller = JogadorController()
 
     loja_selecionada = {}
     item_selecionado = {}
@@ -118,3 +120,13 @@ class BotController:
             self.selecionar_quantidade(chat_id=chat_id)
         elif next == 'efetuar_compra':
             self.efetuar_compra(opcao=data['opcao'], chat_id=chat_id)
+
+    def confirmar_username(self, message):
+        self.bot.send_chat_action(message.chat.id, 'typing')
+        username = message.text
+        self.jogador_controller.criar_jogador(username=username)
+        self.bot.reply_to(message, f'Seja bem-vindo {username} ! A grande Redzay te espera.')
+
+    def inserir_username(self, chat_id):
+        reply = self.bot.send_message(chat_id=chat_id, text='Digite seu nome de usuário', reply_markup=ForceReply())
+        self.bot.register_for_reply_by_message_id(message_id=reply.message_id, callback=self.confirmar_username)

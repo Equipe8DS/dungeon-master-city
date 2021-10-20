@@ -5,6 +5,7 @@ import telebot
 from dotenv import load_dotenv
 
 from botController import BotController
+from bot_utils import BotUtils
 from cidade.cidade_controller import CidadeController
 from item.item_controller import ItemController
 from jogador.jogador_controller import JogadorController
@@ -23,11 +24,14 @@ item_controller = ItemController()
 jogador_controller = JogadorController()
 loja_controller = LojaController()
 personagem_controller = PersonagemController()
+bot_util = BotUtils.get_instance()
 
 
 @bot.message_handler(commands=['comprar'])
 def comprar_item(message):
     cid = message.chat.id
+    uid = message.from_user.id
+    bot_util.set_uid_telegram(uid)
     bot.send_chat_action(cid, 'typing')
     bot_controller.selecionar_personagem(chat_id=cid)
 
@@ -40,6 +44,8 @@ def callback_query(call):
 @bot.message_handler(commands=['cidades'])
 def send_cidades_lista(message):
     cid = message.chat.id
+    uid = message.from_user.id
+    bot_util.set_uid_telegram(uid)
     bot.send_chat_action(cid, 'typing')
 
     results = cidade_controller.buscar_cidade()
@@ -50,9 +56,11 @@ def send_cidades_lista(message):
 @bot.message_handler(commands=['jogadores'])
 def send_jogadores_lista(message):
     cid = message.chat.id
+    uid = message.from_user.id
+    bot_util.set_uid_telegram(uid)
     bot.send_chat_action(cid, 'typing')
 
-    results = jogador_controller.buscar_jogador()
+    results = jogador_controller.buscar_jogadores()
     response = bot_controller.gerar_lista_por_nomes(results)
     bot.reply_to(message, "Jogadores registrados: \n" + response, parse_mode="Markdown")
 
@@ -60,6 +68,8 @@ def send_jogadores_lista(message):
 @bot.message_handler(commands=['cidade'])
 def send_info_cidade(message):
     cid = message.chat.id
+    uid = message.from_user.id
+    bot_util.set_uid_telegram(uid)
     bot.send_chat_action(cid, 'typing')
 
     results = cidade_controller.buscar_cidade()
@@ -81,6 +91,8 @@ def send_info_cidade(message):
 @bot.message_handler(commands=['estoque'])
 def send_info_estoque(message):
     cid = message.chat.id
+    uid = message.from_user.id
+    bot_util.set_uid_telegram(uid)
     bot.send_chat_action(cid, 'typing')
 
     loja_name = ' '.join(message.text.split(' ')[1:])
@@ -100,6 +112,8 @@ def send_info_estoque(message):
 @bot.message_handler(commands=['item'])
 def send_info_item(message):
     cid = message.chat.id
+    uid = message.from_user.id
+    bot_util.set_uid_telegram(uid)
     bot.send_chat_action(cid, 'typing')
 
     try:
@@ -119,6 +133,8 @@ def send_info_item(message):
 @bot.message_handler(commands=['jogador'])
 def send_info_jogador(message):
     cid = message.chat.id
+    uid = message.from_user.id
+    bot_util.set_uid_telegram(uid)
     bot.send_chat_action(cid, 'typing')
 
     results = jogador_controller.buscar_jogador()
@@ -140,6 +156,8 @@ def send_info_jogador(message):
 @bot.message_handler(commands=['loja'])
 def send_info_loja(message):
     cid = message.chat.id
+    uid = message.from_user.id
+    bot_util.set_uid_telegram(uid)
     bot.send_chat_action(cid, 'typing')
 
     try:
@@ -159,6 +177,8 @@ def send_info_loja(message):
 @bot.message_handler(commands=['personagem'])
 def send_info_personagem(message):
     cid = message.chat.id
+    uid = message.from_user.id
+    bot_util.set_uid_telegram(uid)
     bot.send_chat_action(cid, 'typing')
 
     try:
@@ -178,6 +198,8 @@ def send_info_personagem(message):
 @bot.message_handler(commands=['itens'])
 def send_itens_lista(message):
     cid = message.chat.id
+    uid = message.from_user.id
+    bot_util.set_uid_telegram(uid)
     bot.send_chat_action(cid, 'typing')
 
     results = item_controller.buscar_itens()
@@ -188,6 +210,8 @@ def send_itens_lista(message):
 @bot.message_handler(commands=['lojas'])
 def send_lojas_lista(message):
     cid = message.chat.id
+    uid = message.from_user.id
+    bot_util.set_uid_telegram(uid)
     bot.send_chat_action(cid, 'typing')
 
     results = loja_controller.buscar_loja()
@@ -198,6 +222,8 @@ def send_lojas_lista(message):
 @bot.message_handler(commands=['personagens'])
 def send_personagens_lista(message):
     cid = message.chat.id
+    uid = message.from_user.id
+    bot_util.set_uid_telegram(uid)
     bot.send_chat_action(cid, 'typing')
 
     results = personagem_controller.buscar_personagens()
@@ -208,9 +234,10 @@ def send_personagens_lista(message):
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     cid = message.chat.id
-    bot.send_chat_action(cid, 'typing')
-    bot.reply_to(message, "Seja bem-vindo ! A grande Redzay te espera.")
+    uid = message.from_user.id
+    bot_util.set_uid_telegram(uid)
 
+    bot_controller.inserir_username(cid)
 
 bot_controller.bot = bot
 bot.polling(non_stop=True)
