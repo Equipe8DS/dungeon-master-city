@@ -7,25 +7,25 @@ from dotenv import load_dotenv
 from botController import BotController
 from bot_utils import BotUtils
 from cidade.cidade_controller import CidadeController
+from historico.historico_controller import HistoricoController
 from item.item_controller import ItemController
 from jogador.jogador_controller import JogadorController
 from loja.loja_controller import LojaController
 from personagem.personagem_controller import PersonagemController
 
+bot_controller = BotController.get_instance()
 load_dotenv()
-
 bot_token = os.getenv('BOT_TOKEN')
+bot_controller.bot = telebot.TeleBot(token=bot_token)
+bot = bot_controller.bot
 
-bot = telebot.TeleBot(token=bot_token)
-
-bot_controller = BotController()
 cidade_controller = CidadeController()
 item_controller = ItemController()
 jogador_controller = JogadorController()
 loja_controller = LojaController()
 personagem_controller = PersonagemController()
+historico_controller = HistoricoController()
 bot_util = BotUtils.get_instance()
-
 
 @bot.message_handler(commands=['comprar'])
 def comprar_item(message):
@@ -36,7 +36,15 @@ def comprar_item(message):
     bot_controller.selecionar_personagem(chat_id=cid)
 
 
-@bot.callback_query_handler(func=lambda call: True)
+def is_acao_compra(call):
+    try:
+        data = json.loads(call.data)
+        return 'acao' in data and data['acao'] == 'comprar'
+    except Exception:
+        pass
+
+
+@bot.callback_query_handler(func=is_acao_compra)
 def callback_query(call):
     bot_controller.processa_compra(dados=call)
 
@@ -219,6 +227,11 @@ def send_lojas_lista(message):
     bot.reply_to(message, "Lojas registradas: \n" + response, parse_mode="Markdown")
 
 
+@bot.message_handler(commands=['historico'])
+def send_historico(message):
+    historico_controller.inicia_interacao_historico(message=message)
+
+
 @bot.message_handler(commands=['personagens'])
 def send_personagens_lista(message):
     cid = message.chat.id
@@ -239,7 +252,6 @@ def send_welcome(message):
 
     bot_controller.inserir_username(cid)
 
-bot_controller.bot = bot
 bot.polling(non_stop=True)
 # while True:
 #    try:

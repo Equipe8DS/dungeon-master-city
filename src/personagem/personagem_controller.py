@@ -1,5 +1,7 @@
 import json
 
+from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
+
 from bot_utils import BotUtils
 
 
@@ -25,3 +27,14 @@ class PersonagemController:
                f'Tipo: {personagem["tipo"]} \n'
 
         return info
+
+    def get_botoes(self):
+        personagens = self.buscar_personagens()
+        markup = InlineKeyboardMarkup()
+        markup.row_width = 2
+
+        for personagem in personagens:
+            data = json.dumps({'id': personagem['pk'], 'nome': personagem['nome']})
+            markup.add(InlineKeyboardButton(personagem['nome'], callback_data=data))
+
+        return markup
