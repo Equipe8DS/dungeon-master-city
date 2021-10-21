@@ -3,12 +3,14 @@ import json
 import telebot
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, ForceReply
 
+from item.item_controller import ItemController
 from loja.loja_controller import LojaController
 from personagem.personagem_controller import PersonagemController
-from item.item_controller import ItemController
 
 
 class BotController:
+    __instance__ = None
+
     bot = telebot.TeleBot(token='')
     loja_controller = LojaController()
     personagem_controller = PersonagemController()
@@ -18,6 +20,19 @@ class BotController:
     item_selecionado = {}
     personagem_selecionado = {}
     quantidade_selecionada = {}
+
+    def __init__(self):
+        if BotController.__instance__ is None:
+            BotController.__instance__ = self
+        else:
+            raise Exception("This class is a singleton!")
+
+    @staticmethod
+    def get_instance():
+        if BotController.__instance__ is None:
+            BotController.__instance__ = BotController()
+
+        return BotController.__instance__
 
     def gerar_lista_por_nomes(self, list):
         i = 1
@@ -39,7 +54,7 @@ class BotController:
         for estoque in estoques_loja:
             item_json = {'id': estoque['item_id']}
 
-            data = json.dumps({'next': 'qtd', 'item': item_json})
+            data = json.dumps({'acao': 'comprar', 'next': 'qtd', 'item': item_json})
 
             label = f'{estoque["item"]["nome"]} ({estoque["preco_item"]}G)'
             markup.add(InlineKeyboardButton(text=label, callback_data=data))
@@ -52,7 +67,7 @@ class BotController:
         markup.row_width = 2
 
         for loja in lojas:
-            data = json.dumps({'next': 'item', 'id': loja['pk'], 'nome': loja['nome']})
+            data = json.dumps({'acao': 'comprar', 'next': 'item', 'id': loja['pk'], 'nome': loja['nome']})
             markup.add(InlineKeyboardButton(loja['nome'], callback_data=data))
 
         self.bot.send_message(chat_id=chat_id, text='Em qual loja deseja comprar?', reply_markup=markup)
@@ -63,7 +78,7 @@ class BotController:
         markup.row_width = 2
 
         for personagem in personagens:
-            data = json.dumps({'next': 'loja', 'id': personagem['pk'], 'nome': personagem['nome']})
+            data = json.dumps({'acao': 'comprar', 'next': 'loja', 'id': personagem['pk'], 'nome': personagem['nome']})
             markup.add(InlineKeyboardButton(personagem['nome'], callback_data=data))
 
         self.bot.send_message(chat_id=chat_id, text='Para qual personagem deseja comprar?', reply_markup=markup)
@@ -79,8 +94,11 @@ class BotController:
         text_confirmacao = f'Confirma compra de {self.quantidade_selecionada} {self.item_selecionado["nome"]} em ' \
                            f'{self.loja_selecionada["nome"]} para {self.personagem_selecionado["nome"]}?'
 
-        opcao_sim = InlineKeyboardButton(text='Sim', callback_data=json.dumps({'next': 'efetuar_compra', 'opcao': 'sim'}))
-        opcao_nao = InlineKeyboardButton(text='Não', callback_data=json.dumps({'next': 'efetuar_compra', 'opcao': 'nao'}))
+        opcao_sim = InlineKeyboardButton(text='Sim', callback_data=json.dumps({'acao': 'comprar', 'next': 'efetuar_compra',
+                                                                               'opcao': 'sim'}))
+        opcao_nao = InlineKeyboardButton(text='Não',
+                                         callback_data=json.dumps({'acao': 'comprar', 'next': 'efetuar_compra',
+                                                                   'opcao': 'nao'}))
 
         markup = InlineKeyboardMarkup(row_width=2, keyboard=[[opcao_sim, opcao_nao]])
         self.bot.send_message(chat_id=chat_id, text=text_confirmacao, reply_markup=markup)
