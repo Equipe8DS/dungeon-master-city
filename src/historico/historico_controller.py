@@ -72,7 +72,7 @@ class HistoricoController:
 
     def seleciona_loja(self, call):
         loja_controller = LojaController()
-        botoes = loja_controller.get_botoes()
+        botoes = loja_controller.get_botoes_loja()
         chat_id = call.message.chat.id
 
         self.bot_controller.bot.delete_message(message_id=call.message.id, chat_id=chat_id)

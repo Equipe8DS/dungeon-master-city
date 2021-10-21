@@ -10,6 +10,7 @@ from cidade.cidade_controller import CidadeController
 from historico.historico_controller import HistoricoController
 from item.item_controller import ItemController
 from jogador.jogador_controller import JogadorController
+from loja.compra_controller import CompraController
 from loja.loja_controller import LojaController
 from personagem.personagem_controller import PersonagemController
 
@@ -23,6 +24,7 @@ cidade_controller = CidadeController()
 item_controller = ItemController()
 jogador_controller = JogadorController()
 loja_controller = LojaController()
+compra_controller = CompraController()
 personagem_controller = PersonagemController()
 historico_controller = HistoricoController()
 bot_util = BotUtils.get_instance()
@@ -33,7 +35,7 @@ def comprar_item(message):
     uid = message.from_user.id
     bot_util.set_uid_telegram(uid)
     bot.send_chat_action(cid, 'typing')
-    bot_controller.selecionar_personagem(chat_id=cid)
+    compra_controller.iniciar_interacao(chat_id=cid)
 
 
 def is_acao_compra(call):
