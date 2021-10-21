@@ -10,7 +10,7 @@ from personagem.personagem_controller import PersonagemController
 
 class HistoricoController:
     __ACAO__ = 'history'
-    __bot_util__ = BotUtils()
+    __bot_util__ = BotUtils.get_instance()
     __historico_escolhido__ = ''
 
     bot_controller = BotController.get_instance()
@@ -48,6 +48,8 @@ class HistoricoController:
         self.bot_controller.bot.send_message(chat_id=chat_id, text=historico, parse_mode='MarkdownV2')
 
     def inicia_interacao_historico(self, message):
+        self.__bot_util__.set_uid_telegram(message.from_user.id)
+
         chat_id = message.chat.id
         text_confirmacao = 'Qual histórico deseja visualizar?'
 
