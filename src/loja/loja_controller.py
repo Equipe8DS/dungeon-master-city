@@ -1,12 +1,14 @@
 import json
 
+from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
+
 from bot_utils import BotUtils
 from item.item_controller import ItemController
 from personagem.personagem_controller import PersonagemController
 
 
 class LojaController:
-    __bot_util__ = BotUtils()
+    __bot_util__ = BotUtils.get_instance()
     personagem_controller = PersonagemController()
     item_controller = ItemController()
 
@@ -71,3 +73,26 @@ class LojaController:
                f'Ativo: {loja["ativo"]}'
 
         return info
+
+    def get_botoes_loja(self):
+        lojas = self.buscar_loja()
+        markup = InlineKeyboardMarkup()
+        markup.row_width = 2
+
+        for loja in lojas:
+            data = json.dumps({'id': loja['pk'], 'nome': loja['nome']})
+            markup.add(InlineKeyboardButton(loja['nome'], callback_data=data))
+
+        return markup
+
+    def get_botoes_estoque(self, loja_id):
+        estoques_loja = self.buscar_estoque(loja_id=loja_id)
+        markup = InlineKeyboardMarkup()
+        markup.row_width = 2
+
+        for estoque in estoques_loja:
+            data = json.dumps({'id': estoque['item_id'], 'nome': estoque['item']['nome']})
+            label = f'{estoque["item"]["nome"]} ({estoque["preco_item"]}G)'
+            markup.add(InlineKeyboardButton(text=label, callback_data=data))
+
+        return markup

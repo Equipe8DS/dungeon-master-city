@@ -1,10 +1,12 @@
 import json
 
+from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
+
 from bot_utils import BotUtils
 
 
 class PersonagemController:
-    __bot_util__ = BotUtils()
+    __bot_util__ = BotUtils.get_instance()
 
     def buscar_personagens(self):
         request = self.__bot_util__.send_get('/personagem/')
@@ -35,6 +37,17 @@ class PersonagemController:
         for object in inventario:
             desc = "\n     Descrição: " + object["item"]["descricao"]
             cat = "\n     Categoria: " + object["item"]["categoria"]
-            response = response + str(i) + " - " +  "Nome: " + object["item"]["nome"] + cat +  desc  + "\n" 
+            response = response + str(i) + " - " + "Nome: " + object["item"]["nome"] + cat + desc + "\n"
             i = i + 1
-        return "Inventario de personagem " + personagem_id + ': \n' + response   
+        return "Inventario de personagem " + personagem_id + ': \n' + response
+
+    def get_botoes(self):
+        personagens = self.buscar_personagens()
+        markup = InlineKeyboardMarkup()
+        markup.row_width = 2
+
+        for personagem in personagens:
+            data = json.dumps({'id': personagem['pk'], 'nome': personagem['nome']})
+            markup.add(InlineKeyboardButton(personagem['nome'], callback_data=data))
+
+        return markup
