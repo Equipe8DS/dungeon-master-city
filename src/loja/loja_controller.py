@@ -8,7 +8,7 @@ from personagem.personagem_controller import PersonagemController
 
 
 class LojaController:
-    __bot_util__ = BotUtils()
+    __bot_util__ = BotUtils.get_instance()
     personagem_controller = PersonagemController()
     item_controller = ItemController()
 

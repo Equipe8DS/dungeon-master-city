@@ -4,7 +4,7 @@ from bot_utils import BotUtils
 
 
 class CidadeController:
-    __bot_util__ = BotUtils()
+    __bot_util__ = BotUtils.get_instance()
 
     def buscar_cidade(self):
         request = self.__bot_util__.send_get(path='/cidade/')
