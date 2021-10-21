@@ -50,15 +50,17 @@ class ItemController:
 
     def info_detalhada_item(self, item, show_preco=True):
         if show_preco:
-            info = f'Nome: {item["nome"]} \n' \
+            info = f'*:::::::::: {item["nome"]} ::::::::::*\n' \
                    f'Preço Sugerido: {item["preco_sugerido"]} peças de ouro \n' \
                    f'Qualidade: {self.imprime_qualidade(qualidade=item["qualidade"])} \n' \
                    f'Categoria: {self.imprime_categoria(item["categoria"])} \n' \
                    f'Descrição: {item["descricao"]} \n'
         else:
-            info = f'Nome: {item["nome"]} \n' \
+            info = f'*:::::::::: {item["nome"]} ::::::::::*\n' \
                    f'Qualidade: {self.imprime_qualidade(qualidade=item["qualidade"])} \n' \
                    f'Categoria: {self.imprime_categoria(item["categoria"])} \n' \
                    f'Descrição: {item["descricao"]} \n'
 
+        info = info.replace('!', '\!')
+        info = info.replace('.', '\.')
         return info
