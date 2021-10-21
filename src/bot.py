@@ -29,6 +29,7 @@ personagem_controller = PersonagemController()
 historico_controller = HistoricoController()
 bot_util = BotUtils.get_instance()
 
+
 @bot.message_handler(commands=['comprar'])
 def comprar_item(message):
     cid = message.chat.id
@@ -205,6 +206,17 @@ def send_info_personagem(message):
         bot.send_message(cid, "Houve um erro ao consultar o personagem.", parse_mode="Markdown")
 
 
+@bot.message_handler(commands=['inventario'])
+def send_inventario_personagem(message):
+    cid = message.chat.id
+    bot_controller.bot.send_chat_action(chat_id=cid, action='typing')
+
+    uid = message.from_user.id
+    bot_util.set_uid_telegram(uid_telegram=uid)
+
+    personagem_controller.iniciar_interacao_inventario(chat_id=cid)
+
+
 @bot.message_handler(commands=['itens'])
 def send_itens_lista(message):
     cid = message.chat.id
@@ -252,7 +264,8 @@ def send_welcome(message):
     uid = message.from_user.id
     bot_util.set_uid_telegram(uid)
 
-    bot_controller.inserir_username(cid)
+    jogador_controller.inserir_username(cid)
+
 
 bot.polling(non_stop=True)
 # while True:
