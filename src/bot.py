@@ -38,18 +38,6 @@ def comprar_item(message):
     compra_controller.iniciar_interacao(chat_id=cid)
 
 
-@bot.message_handler(commands=['cidades'])
-def send_cidades_lista(message):
-    cid = message.chat.id
-    uid = message.from_user.id
-    bot_util.set_uid_telegram(uid)
-    bot.send_chat_action(cid, 'typing')
-
-    results = cidade_controller.buscar_cidade()
-    response = bot_controller.gerar_lista_por_nomes(list=results)
-    bot.reply_to(message, "Cidades registradas: \n" + response, parse_mode="Markdown")
-
-
 @bot.message_handler(commands=['jogadores'])
 def send_jogadores_lista(message):
     cid = message.chat.id
@@ -69,20 +57,7 @@ def send_info_cidade(message):
     bot_util.set_uid_telegram(uid)
     bot.send_chat_action(cid, 'typing')
 
-    results = cidade_controller.buscar_cidade()
-    response_dict = bot_controller.gerar_dicionario_lista_por_nome(results)
-
-    cidade_name = ' '.join(message.text.split(' ')[1:])
-
-    if not cidade_name:
-        bot.send_message(cid, "Insira o nome da cidade que deseja visualizar.")
-    else:
-        try:
-            info = cidade_controller.info_detalhada_cidade(cidade=response_dict[cidade_name])
-            bot.send_message(cid, info, parse_mode="Markdown")
-        except Exception as e:
-            print(e)
-            bot.send_message(cid, "Houve um erro ao consultar a cidade.", parse_mode="Markdown")
+    cidade_controller.escolher_cidade_info(chat_id=cid)
 
 
 @bot.message_handler(commands=['estoque'])
