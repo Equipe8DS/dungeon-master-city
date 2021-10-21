@@ -1,9 +1,7 @@
-import json
 import os
 
 import telebot
 from dotenv import load_dotenv
-from telebot.types import BotCommand
 
 from botController import BotController
 from bot_utils import BotUtils
@@ -159,18 +157,7 @@ def send_info_loja(message):
     bot_util.set_uid_telegram(uid)
     bot.send_chat_action(cid, 'typing')
 
-    try:
-        loja_name = ' '.join(message.text.split(' ')[1:])
-        loja = loja_controller.buscar_loja_nome(loja_nome=loja_name)
-
-        if not loja_name:
-            bot.send_message(cid, "Insira o nome da loja que deseja visualizar.")
-        else:
-            info = loja_controller.info_detalhada_loja(loja=loja)
-            bot.send_message(cid, info, parse_mode="Markdown")
-    except Exception as e:
-        print(e)
-        bot.send_message(cid, "Houve um erro ao consultar a loja.", parse_mode="Markdown")
+    loja_controller.escolher_loja_info(chat_id=cid)
 
 
 @bot.message_handler(commands=['personagem'])
@@ -215,18 +202,6 @@ def send_itens_lista(message):
     results = item_controller.buscar_itens()
     response = bot_controller.gerar_lista_por_nomes(results)
     bot.reply_to(message, "Itens registrados: \n" + response, parse_mode="Markdown")
-
-
-@bot.message_handler(commands=['lojas'])
-def send_lojas_lista(message):
-    cid = message.chat.id
-    uid = message.from_user.id
-    bot_util.set_uid_telegram(uid)
-    bot.send_chat_action(cid, 'typing')
-
-    results = loja_controller.buscar_loja()
-    response = bot_controller.gerar_lista_por_nomes(list=results)
-    bot.reply_to(message, "Lojas registradas: \n" + response, parse_mode="Markdown")
 
 
 @bot.message_handler(commands=['historico'])

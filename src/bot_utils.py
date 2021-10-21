@@ -1,12 +1,10 @@
 import os
 
-import json
 import requests
 from dotenv import load_dotenv
 
 
 class BotUtils:
-
     __instance__ = None
     uid_telegram = ""
     username = ""
@@ -24,6 +22,13 @@ class BotUtils:
             BotUtils.__instance__ = BotUtils()
 
         return BotUtils.__instance__
+
+    def escape_chars(self, string):
+        escape_chars = ['[', ']', '(', ')', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!']
+        for char in escape_chars:
+            string = string.replace(char, f'/{char}')
+
+        return string
 
     def send_get(self, path):
         load_dotenv()

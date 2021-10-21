@@ -2,6 +2,7 @@ import json
 
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
+from botController import BotController
 from bot_utils import BotUtils
 from item.item_controller import ItemController
 from personagem.personagem_controller import PersonagemController
@@ -9,6 +10,7 @@ from personagem.personagem_controller import PersonagemController
 
 class LojaController:
     __bot_util__ = BotUtils.get_instance()
+    __bot_controller__ = BotController.get_instance()
     personagem_controller = PersonagemController()
     item_controller = ItemController()
 
@@ -18,11 +20,16 @@ class LojaController:
         list_from_json = a_json_object["results"]
         return list_from_json
 
-    def buscar_loja(self):
+    def buscar_lojas(self):
         request = self.__bot_util__.send_get(path='/loja/')
         content = json.loads(request.content)
         lojas = content["results"]
         return lojas
+
+    def buscar_loja(self, loja_id):
+        request = self.__bot_util__.send_get(path=f'/loja/{loja_id}/')
+        loja = json.loads(request.content)
+        return loja
 
     def buscar_loja_nome(self, loja_nome):
         request = self.__bot_util__.send_get(path=f'/loja/?nome={loja_nome}')
@@ -43,6 +50,13 @@ class LojaController:
                 response_message += ' Personagem não possui ouro suficiente.'
 
         return response_message
+
+    def escolher_loja_info(self, chat_id):
+        lojas = self.get_botoes_loja()
+        message = self.__bot_controller__.bot.send_message(text='Deseja ver informações de qual loja?',
+                                                           chat_id=chat_id, reply_markup=lojas)
+        self.__bot_controller__.bot.register_callback_query_handler(func=lambda call: message.id == call.message.id,
+                                                                    callback=self.show_info_loja)
 
     def gerar_dicionario_lista_por_nome_itens_estoque(self, itens):
         list_dict = {item['item']['nome']: item for item in itens}
@@ -67,15 +81,15 @@ class LojaController:
         return info
 
     def info_detalhada_loja(self, loja):
-        info = f'Nome: {loja["nome"]} \n' \
+        info = f'*::::::::::  {loja["nome"]} ::::::::::*\n' \
                f'Cidade: {loja["cidade"]} \n' \
-               f'Responsável: {loja["responsavel"]} \n' \
-               f'Ativo: {loja["ativo"]}'
+               f'Responsável: {loja["responsavel"]} \n'
 
+        info = self.__bot_util__.escape_chars(info)
         return info
 
     def get_botoes_loja(self):
-        lojas = self.buscar_loja()
+        lojas = self.buscar_lojas()
         markup = InlineKeyboardMarkup()
         markup.row_width = 2
 
@@ -96,3 +110,13 @@ class LojaController:
             markup.add(InlineKeyboardButton(text=label, callback_data=data))
 
         return markup
+
+    def show_info_loja(self, call):
+        chat_id = call.message.chat.id
+
+        dados = json.loads(call.data)
+        id_loja = dados['id']
+
+        loja = self.buscar_loja(loja_id=id_loja)
+        info_loja = self.info_detalhada_loja(loja=loja)
+        self.__bot_controller__.bot.send_message(text=info_loja, chat_id=chat_id, parse_mode='MarkdownV2')
