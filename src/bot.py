@@ -127,22 +127,12 @@ def send_info_loja(message):
 @bot.message_handler(commands=['personagem'])
 def send_info_personagem(message):
     cid = message.chat.id
-    uid = message.from_user.id
-    bot_util.set_uid_telegram(uid)
     bot.send_chat_action(cid, 'typing')
 
-    try:
-        personagem_name = ' '.join(message.text.split(' ')[1:])
-        personagem = personagem_controller.buscar_personagem_nome(personagem_nome=personagem_name)
+    uid = message.from_user.id
+    bot_util.set_uid_telegram(uid)
 
-        if not personagem_name:
-            bot.send_message(cid, "Insira o nome do personagem que deseja visualizar.")
-        else:
-            info = personagem_controller.info_detalhada_personagem(personagem)
-            bot.send_message(cid, info, parse_mode="Markdown")
-    except Exception as e:
-        print(e)
-        bot.send_message(cid, "Houve um erro ao consultar o personagem.", parse_mode="Markdown")
+    personagem_controller.escolher_personagem_info(chat_id=cid)
 
 
 @bot.message_handler(commands=['inventario'])
@@ -171,18 +161,6 @@ def send_itens_lista(message):
 @bot.message_handler(commands=['historico'])
 def send_historico(message):
     historico_controller.inicia_interacao_historico(message=message)
-
-
-@bot.message_handler(commands=['personagens'])
-def send_personagens_lista(message):
-    cid = message.chat.id
-    uid = message.from_user.id
-    bot_util.set_uid_telegram(uid)
-    bot.send_chat_action(cid, 'typing')
-
-    results = personagem_controller.buscar_personagens()
-    response = bot_controller.gerar_lista_por_nomes(results)
-    bot.reply_to(message, "Personagens registrados: \n" + response, parse_mode="Markdown")
 
 
 @bot.message_handler(commands=['start'])
