@@ -3,6 +3,7 @@ import os
 
 import telebot
 from dotenv import load_dotenv
+from telebot.types import BotCommand
 
 from botController import BotController
 from bot_utils import BotUtils
@@ -37,19 +38,6 @@ def comprar_item(message):
     bot_util.set_uid_telegram(uid)
     bot.send_chat_action(cid, 'typing')
     compra_controller.iniciar_interacao(chat_id=cid)
-
-
-def is_acao_compra(call):
-    try:
-        data = json.loads(call.data)
-        return 'acao' in data and data['acao'] == 'comprar'
-    except Exception:
-        pass
-
-
-@bot.callback_query_handler(func=is_acao_compra)
-def callback_query(call):
-    bot_controller.processa_compra(dados=call)
 
 
 @bot.message_handler(commands=['cidades'])
@@ -267,6 +255,7 @@ def send_welcome(message):
     jogador_controller.inserir_username(cid)
 
 
+bot_controller.set_commmands()
 bot.polling(non_stop=True)
 # while True:
 #    try:
