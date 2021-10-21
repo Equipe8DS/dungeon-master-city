@@ -92,18 +92,7 @@ def send_info_estoque(message):
     bot_util.set_uid_telegram(uid)
     bot.send_chat_action(cid, 'typing')
 
-    loja_name = ' '.join(message.text.split(' ')[1:])
-    loja = loja_controller.buscar_loja_nome(loja_nome=loja_name)
-
-    if not loja_name:
-        bot.send_message(cid, "Insira o nome da loja que deseja visualizar o estoque.")
-    else:
-        try:
-            info = loja_controller.info_detalhada_estoque(loja=loja)
-            bot.send_message(cid, 'Estoque da loja ' + loja_name + ': \n\n' + info, parse_mode="Markdown")
-        except Exception as e:
-            print(e)
-            bot.send_message(cid, "Houve um erro ao consultar a loja.", parse_mode="Markdown")
+    loja_controller.escolher_estoque_loja(chat_id=cid)
 
 
 @bot.message_handler(commands=['item'])

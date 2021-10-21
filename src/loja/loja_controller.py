@@ -51,42 +51,19 @@ class LojaController:
 
         return response_message
 
+    def escolher_estoque_loja(self, chat_id):
+        lojas = self.get_botoes_loja()
+        message = self.__bot_controller__.bot.send_message(text='Deseja ver o estoque de qual loja?',
+                                                           chat_id=chat_id, reply_markup=lojas)
+        self.__bot_controller__.bot.register_callback_query_handler(func=lambda call: message.id == call.message.id,
+                                                                    callback=self.__show_estoque_loja__)
+
     def escolher_loja_info(self, chat_id):
         lojas = self.get_botoes_loja()
         message = self.__bot_controller__.bot.send_message(text='Deseja ver informações de qual loja?',
                                                            chat_id=chat_id, reply_markup=lojas)
         self.__bot_controller__.bot.register_callback_query_handler(func=lambda call: message.id == call.message.id,
-                                                                    callback=self.show_info_loja)
-
-    def gerar_dicionario_lista_por_nome_itens_estoque(self, itens):
-        list_dict = {item['item']['nome']: item for item in itens}
-        return list_dict
-
-    def info_detalhada_estoque(self, loja):
-        estoque = self.buscar_estoque(loja['pk'])
-        response_dict = self.gerar_dicionario_lista_por_nome_itens_estoque(estoque)
-
-        info = ""
-
-        for key in response_dict:
-            elem = response_dict[key]
-            item = elem['item']
-            info_item = self.item_controller.info_detalhada_item(item=item, show_preco=False)
-
-            info += f'{info_item}\n' \
-                    f'Preço: {elem["preco_item"]} peças de ouro \n' \
-                    f'Quantidade: {elem["quantidade_item"]} \n' \
-                    f'==================== \n'
-
-        return info
-
-    def info_detalhada_loja(self, loja):
-        info = f'*::::::::::  {loja["nome"]} ::::::::::*\n' \
-               f'Cidade: {loja["cidade"]} \n' \
-               f'Responsável: {loja["responsavel"]} \n'
-
-        info = self.__bot_util__.escape_chars(info)
-        return info
+                                                                    callback=self.__show_info_loja__)
 
     def get_botoes_loja(self):
         lojas = self.buscar_lojas()
@@ -111,12 +88,53 @@ class LojaController:
 
         return markup
 
-    def show_info_loja(self, call):
+    def __gerar_dicionario_lista_por_nome_itens_estoque__(self, itens):
+        list_dict = {item['item']['nome']: item for item in itens}
+        return list_dict
+
+    def __get_info_detalhada_estoque__(self, estoque):
+        response_dict = self.__gerar_dicionario_lista_por_nome_itens_estoque__(estoque)
+
+        info = ''
+        for key in response_dict:
+            elem = response_dict[key]
+            item = elem['item']
+            info_item = self.item_controller.info_detalhada_item(item=item, show_preco=False)
+
+            info += f'{info_item}' \
+                    f'*Preço: {elem["preco_item"]} peças de ouro \n*' \
+                    f'*Quantidade: {elem["quantidade_item"]} \n\n*' \
+
+        info = self.__bot_util__.escape_chars(info)
+        return info
+
+    def __info_detalhada_loja__(self, loja):
+        info = f'*::::::::::  {loja["nome"]} ::::::::::*\n' \
+               f'Cidade: {loja["cidade"]} \n' \
+               f'Responsável: {loja["responsavel"]} \n'
+
+        info = self.__bot_util__.escape_chars(info)
+        return info
+
+    def __show_estoque_loja__(self, call):
+        chat_id = call.message.chat.id
+
+        dados = json.loads(call.data)
+        id_loja = dados['id']
+        nome = dados['nome']
+
+        estoque = self.buscar_estoque(loja_id=id_loja)
+        info_estoque = f'*__Estoque de {nome}__*\n\n'
+        info_estoque += self.__get_info_detalhada_estoque__(estoque=estoque)
+
+        self.__bot_controller__.bot.send_message(text=info_estoque, chat_id=chat_id, parse_mode='MarkdownV2')
+
+    def __show_info_loja__(self, call):
         chat_id = call.message.chat.id
 
         dados = json.loads(call.data)
         id_loja = dados['id']
 
         loja = self.buscar_loja(loja_id=id_loja)
-        info_loja = self.info_detalhada_loja(loja=loja)
+        info_loja = self.__info_detalhada_loja__(loja=loja)
         self.__bot_controller__.bot.send_message(text=info_loja, chat_id=chat_id, parse_mode='MarkdownV2')

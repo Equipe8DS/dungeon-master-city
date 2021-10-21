@@ -61,6 +61,4 @@ class ItemController:
                    f'Categoria: {self.imprime_categoria(item["categoria"])} \n' \
                    f'Descrição: {item["descricao"]} \n'
 
-        info = info.replace('!', '\!')
-        info = info.replace('.', '\.')
         return info

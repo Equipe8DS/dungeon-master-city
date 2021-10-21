@@ -50,6 +50,7 @@ class PersonagemController:
             inventario += f'{item_info}' \
                           f'Quantidade: {item["quantidade"]}\n\n'
 
+        inventario = self.__bot_util__.escape_chars(inventario)
         return inventario
 
     def get_botoes(self):

@@ -26,7 +26,7 @@ class BotUtils:
     def escape_chars(self, string):
         escape_chars = ['[', ']', '(', ')', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!']
         for char in escape_chars:
-            string = string.replace(char, f'/{char}')
+            string = string.replace(char, f'\{char}')
 
         return string
 
