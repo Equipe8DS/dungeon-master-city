@@ -19,6 +19,7 @@ class ItemController:
         'agricultura': 'Agricultura',
         'casa': 'Casa',
         'equipamento': 'Equipamento',
+        'moeda': 'Moeda',
         'luxo': 'Luxo',
     }
 
