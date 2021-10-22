@@ -31,7 +31,7 @@ class PersonagemController:
 
     def escolher_personagem_info(self, chat_id):
         personagens = self.get_botoes()
-        message = self.__bot_controller__.bot.send_message(text='Deseja ver informações de qual loja?',
+        message = self.__bot_controller__.bot.send_message(text='Deseja ver informações de qual personagem?',
                                                            chat_id=chat_id, reply_markup=personagens)
         self.__bot_controller__.bot.register_callback_query_handler(func=lambda call: message.id == call.message.id,
                                                                     callback=self.__show_info_personagem__)
