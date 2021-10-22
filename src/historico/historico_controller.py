@@ -22,9 +22,15 @@ class HistoricoController:
 
     def converte_historico_json_to_string(self, historico_json):
         historico = ''
-        for json in historico_json:
-            historico += f'• {json["descricao"]}\n\n'
 
+        if len(historico_json) > 0:
+            for json in historico_json:
+                historico += f'• {json["descricao"]}\n\n'
+
+        else:
+            historico = 'Não houveram transações.'
+
+        historico = self.__bot_util__.escape_chars(historico)
         return historico
 
     def mostra_historico(self, call):
@@ -42,7 +48,6 @@ class HistoricoController:
         nome = dados['nome']
         historico = f'*Histórico de __{nome}__*\n'
         historico += self.get_historico(params=params)
-        historico = historico.replace('.', '\.')
 
         self.bot_controller.bot.delete_message(message_id=call.message.id, chat_id=chat_id)
         self.bot_controller.bot.send_message(chat_id=chat_id, text=historico, parse_mode='MarkdownV2')
@@ -87,7 +92,8 @@ class HistoricoController:
         chat_id = call.message.chat.id
 
         self.bot_controller.bot.delete_message(message_id=call.message.id, chat_id=chat_id)
-        message = self.bot_controller.bot.send_message(chat_id=chat_id, text='Deseja ver o histórico de qual personagem?',
+        message = self.bot_controller.bot.send_message(chat_id=chat_id,
+                                                       text='Deseja ver o histórico de qual personagem?',
                                                        reply_markup=botoes)
         self.bot_controller.bot.register_callback_query_handler(func=lambda call: message.id == call.message.id,
                                                                 callback=self.mostra_historico)
