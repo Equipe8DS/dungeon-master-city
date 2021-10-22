@@ -34,15 +34,17 @@ class BotController:
 
     def set_commmands(self):
         commands = [
-            BotCommand(command='start', description='Usado para iniciar o bot'),
-            BotCommand(command='loja', description='Usado para ver informações de uma loja'),
-            BotCommand(command='estoque', description='Usado para ver o estoque de uma loja'),
-            BotCommand(command='comprar', description='Usado para comprar itens para um personagem'),
-            BotCommand(command='cidade', description='Usado para ver informações sobre uma cidade'),
-            BotCommand(command='personagem', description='Usado para ver informações de um personagem'),
-            BotCommand(command='inventario', description='Usado para ver o inventário de um personagem'),
-            BotCommand(command='item', description="Usado para ver informações de um item"),
-            BotCommand(command='historico', description='Usado para ver o histórico de um personagem ou loja'),
+            BotCommand(command='start', description='Usado para iniciar o bot.'),
+            BotCommand(command='help', description='Exibe lista de comandos.'),
+            BotCommand(command='loja', description='Exibe informações de uma loja.'),
+            BotCommand(command='estoque', description='Exibe o estoque de uma loja.'),
+            BotCommand(command='comprar', description='Usado para comprar itens para um personagem.'),
+            BotCommand(command='cidade', description='Exibe informações de uma cidade.'),
+            BotCommand(command='personagem', description='Exibe informações de um personagem.'),
+            BotCommand(command='inventario', description='Exibe o inventário de um personagem.'),
+            BotCommand(command='itens', description='Exibe lista de itens.'),
+            BotCommand(command='item', description="Exibe informações de um item."),
+            BotCommand(command='historico', description='Exibe o histórico de um personagem ou loja.'),
         ]
 
         self.bot.set_my_commands(commands=commands)

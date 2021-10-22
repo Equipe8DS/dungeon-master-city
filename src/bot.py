@@ -2,6 +2,7 @@ import os
 
 import telebot
 from dotenv import load_dotenv
+from telebot.types import BotCommandScopeDefault
 
 from botController import BotController
 from bot_utils import BotUtils
@@ -162,6 +163,19 @@ def send_itens_lista(message):
 def send_historico(message):
     historico_controller.inicia_interacao_historico(message=message)
 
+@bot.message_handler(commands='help')
+def send_historico(message):
+    chat_id = message.chat.id
+
+    commands = bot.get_my_commands(scope=BotCommandScopeDefault(), language_code='')
+    message = '*Seja bem-vindo! A grande Redzay te espera.*\n\n' \
+              'A seguir, a lista de comandos disponíveis para este bot.\n\n'
+
+    for command in commands:
+        message += f'/{command.command}: {command.description}\n\n'
+
+    message = bot_util.escape_chars(message)
+    bot.send_message(chat_id=chat_id, text=message, parse_mode='MarkdownV2')
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
